@@ -12,6 +12,18 @@ $(document).ready(function(){
 
 }
 
+  class Goblin {
+    constructor (type, attack, defense, hitPoints, counterAttack){
+      this.type = type;
+      this.attack = attack;
+      this.defense = defense;
+      this.hitPoints = hitPoints;
+      this.counterAttack = counterAttack;
+    }
+  }
+
+  let battleGoblins = []
+  let selectedGoblin = 0
   let vanguardLvl = 0
   let warriorLvl = 0
   let elfLvl = 0
@@ -27,12 +39,35 @@ $(document).ready(function(){
   
   let playerTurn = false
   
+  generateGoblins()
+
+  function generateGoblins() {
+    let numGoblins = Math.floor(Math.random()*3)+1
+    for (let i=0;i<numGoblins;i++){
+      let newGoblin = new Goblin(gameData.goblinStats[0].type,
+        gameData.goblinStats[0].attack,
+        gameData.goblinStats[0].defense,
+        gameData.goblinStats[0].hitPoints,
+        gameData.goblinStats[0].counterAttack)
+
+        battleGoblins.push(newGoblin)
+
+        
+    }
+
+    for (let i=0; i<battleGoblins.length; i++){
+      let goblinButton = $('<button>')
+      goblinButton.attr('id',i)
+      goblinButton.attr('class','goblinButton')
+      goblinButton.text("Goblin"+' '+i)
+      $('#goblins').append(goblinButton)
+    }
+
+  }
+
   $('#vanguardHP').text('Vanguard:'+ ''+vanguardHP)
   $('#warriorHP').text('Warrior:'+ ''+warriorHP)
   $('#elfHP').text('Elf:'+ ''+elfHP)
-  
-  
-  enemyAttack();
   
   
   $('#elf').on("click", function(){
@@ -46,31 +81,44 @@ $(document).ready(function(){
   $('#vanguard').on("click", function(){
     vanguardAttack()
   })
+
+  $('.goblinButton').on("click", function(){
+    selectedGoblinStr = $(this).attr('id')
+    selectedGoblin = parseInt(selectedGoblinStr,10)
+  })
   
-  
+  enemyAttack();
   
   function enemyAttack(){
-  
+
     determineAttack()
-    
+
     function determineAttack(){
+      let attackerGob = Math.floor(Math.random()*battleGoblins.length)
       let attackedChar = Math.floor(Math.random()*3)
+
+
+    function generateAttack() {  
     
     if (attackedChar === 0 && vanguardHP > 0) {
-      attackVanguard();
+      attackVanguard(attackerGob);
     } else if (attackedChar === 1 &&  warriorHP > 0) {
-      attackWarrior();
+      attackWarrior(attackerGob);
     } else if (attackedChar === 2 && elfHP > 0) {
-      attackElf();
+      attackElf(attackerGob);
     } else {
       console.log("Does this work?")
       enemyAttack();
     }
 
+  }
+
+  generateAttack()
+
     }  
   
-  function attackVanguard(){
-      let damage = Math.floor(Math.random()*gameData.goblinStats[0].attack)+1 - Math.floor(Math.random()*gameData.vanguardStats[vanguardLvl].defense)+1
+  function attackVanguard(atk){
+      let damage = Math.floor(Math.random()*battleGoblins[atk].attack)+1 - Math.floor(Math.random()*gameData.vanguardStats[vanguardLvl].defense)+1
       if (damage <= 0){
         damage = 0
         console.log("Goblin Missed!")
@@ -78,7 +126,7 @@ $(document).ready(function(){
       } else {
       vanguardHP = vanguardHP - damage
   
-      console.log("Goblin Attacks Vanguard and deals"+damage+"damage.")
+      console.log("Goblin "+atk+ " Attacks Vanguard and deals"+damage+"damage.")
       if (vanguardHP < 1) {
         killVanguard();
       }
@@ -86,9 +134,9 @@ $(document).ready(function(){
       }
   }
   
-    function attackWarrior(){
+    function attackWarrior(atk){
   
-      let damage = Math.floor(Math.random()*gameData.goblinStats[0].attack)+1 - Math.floor(Math.random()*gameData.warriorStats[warriorLvl].defense)+1
+      let damage = Math.floor(Math.random()*battleGoblins[atk].attack)+1 - Math.floor(Math.random()*gameData.warriorStats[warriorLvl].defense)+1
       if (damage <= 0){
         damage = 0
         console.log("Goblin Missed!")
@@ -96,7 +144,7 @@ $(document).ready(function(){
       } else {
       warriorHP = warriorHP - damage
   
-      console.log("Goblin Attacks Warrior and deals"+damage+"damage.")
+      console.log("Goblin "+atk+ " Attacks Warrior and deals"+damage+"damage.")
       if (warriorHP < 1) {
         killWarrior();
       }
@@ -106,9 +154,9 @@ $(document).ready(function(){
   
     
   
-    function attackElf(){
+    function attackElf(atk){
   
-      let damage = Math.floor(Math.random()*gameData.goblinStats[0].attack)+1 - Math.floor(Math.random()*gameData.elfStats[elfLvl].defense)+1
+      let damage = Math.floor(Math.random()*battleGoblins[atk].attack)+1 - Math.floor(Math.random()*gameData.elfStats[elfLvl].defense)+1
       if (damage <= 0){
         damage = 0
         console.log("Goblin Missed!")
@@ -118,7 +166,7 @@ $(document).ready(function(){
   
       
   
-      console.log("Goblin Attacks Elf and deals"+damage+"damage.")
+      console.log("Goblin" +atk+ "Attacks Elf and deals"+damage+"damage.")
       if (elfHP < 1) {
         killElf();
       }
@@ -140,7 +188,7 @@ $(document).ready(function(){
   function elfAttack(){
     if (playerTurn = true){
   
-      let damage = Math.floor(Math.random()*gameData.elfStats[elfLvl].attack)+1 - Math.floor(Math.random()*gameData.goblinStats[0].defense)+1
+      let damage = Math.floor(Math.random()*gameData.elfStats[elfLvl].attack)+1 - Math.floor(Math.random()*battleGoblins[selectedGoblin].defense)+1
       if (damage <= 0){
         damage = 0
         console.log("Elf Missed!")
@@ -149,7 +197,7 @@ $(document).ready(function(){
       } else {
       goblinHP = goblinHP - damage
   
-      console.log("Elf Attacks Goblin and deals"+damage+"damage.")
+      console.log("Elf Attacks Goblin " +selectedGoblin + " and deals "+damage+" damage.")
       if (goblinHP < 1) {
         killGoblin();
       }
@@ -165,7 +213,7 @@ $(document).ready(function(){
   function warriorAttack(){
     if (playerTurn = true){
   
-      let damage = Math.floor(Math.random()*gameData.warriorStats[warriorLvl].attack)+1 - Math.floor(Math.random()*gameData.goblinStats[0].defense)+1
+      let damage = Math.floor(Math.random()*gameData.warriorStats[warriorLvl].attack)+1 - Math.floor(Math.random()*battleGoblins[selectedGoblin].defense)+1
       if (damage <= 0){
         damage = 0
         console.log("Warrior Missed!")
@@ -174,7 +222,7 @@ $(document).ready(function(){
       } else {
       goblinHP = goblinHP - damage
   
-      console.log("Warrior Attacks Goblin and deals"+damage+"damage.")
+      console.log("Warrior Attacks Goblin "+selectedGoblin+" and deals"+damage+"damage.")
       if (goblinHP < 1) {
         killGoblin();
       }
@@ -188,9 +236,10 @@ $(document).ready(function(){
   }
   
   function vanguardAttack(){
+    console.log(selectedGoblin)
     if (playerTurn = true){
   
-      let damage = Math.floor(Math.random()*gameData.vanguardStats[vanguardLvl].attack)+1 - Math.floor(Math.random()*gameData.goblinStats[0].defense)+1
+      let damage = Math.floor(Math.random()*gameData.vanguardStats[vanguardLvl].attack)+1 - Math.floor(Math.random()*battleGoblins[selectedGoblin].defense)+1
       if (damage <= 0){
         damage = 0
         console.log("Vanguard Missed!")
@@ -198,7 +247,7 @@ $(document).ready(function(){
         enemyAttack();
       } else {
       goblinHP = goblinHP - damage
-      console.log("Vanguard Attacks Goblin and deals"+damage+"damage.")
+      console.log("Vanguard Attacks Goblin "+selectedGoblin+" and deals"+damage+"damage.")
       if (goblinHP < 1) {
         killGoblin();
       }
