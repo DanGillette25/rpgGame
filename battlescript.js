@@ -13,12 +13,13 @@ $(document).ready(function(){
 }
 
   class Goblin {
-    constructor (type, attack, defense, hitPoints, counterAttack){
+    constructor (type, attack, defense, hitPoints, counterAttack, alive){
       this.type = type;
       this.attack = attack;
       this.defense = defense;
       this.hitPoints = hitPoints;
       this.counterAttack = counterAttack;
+      this.alive = alive;
     }
   }
 
@@ -48,7 +49,8 @@ $(document).ready(function(){
         gameData.goblinStats[0].attack,
         gameData.goblinStats[0].defense,
         gameData.goblinStats[0].hitPoints,
-        gameData.goblinStats[0].counterAttack)
+        gameData.goblinStats[0].counterAttack,
+        1)
 
         battleGoblins.push(newGoblin)
 
@@ -68,6 +70,12 @@ $(document).ready(function(){
   $('#vanguardHP').text('Vanguard:'+ ''+vanguardHP)
   $('#warriorHP').text('Warrior:'+ ''+warriorHP)
   $('#elfHP').text('Elf:'+ ''+elfHP)
+  $('#vanguardattack').hide()
+  $('#vanguardspecial').hide()
+  $('#warriorattack').hide()
+  $('#warriorspecial').hide()
+  $('#elfattack').hide()
+  $('#elfspecial').hide()
   
   
   $('#elf').on("click", function(){
@@ -85,11 +93,14 @@ $(document).ready(function(){
   $('.goblinButton').on("click", function(){
     selectedGoblinStr = $(this).attr('id')
     selectedGoblin = parseInt(selectedGoblinStr,10)
+    goblinHP = battleGoblins[selectedGoblin].hitPoints
   })
   
   enemyAttack();
   
   function enemyAttack(){
+
+    if (battleGoblins)
 
     determineAttack()
 
@@ -100,15 +111,18 @@ $(document).ready(function(){
 
     function generateAttack() {  
     
-    if (attackedChar === 0 && vanguardHP > 0) {
+    if (attackedChar === 0 && vanguardHP > 0 && battleGoblins[attackerGob].alive > 0) {
       attackVanguard(attackerGob);
-    } else if (attackedChar === 1 &&  warriorHP > 0) {
+    } else if (attackedChar === 1 &&  warriorHP > 0 && battleGoblins[attackerGob].alive > 0) {
       attackWarrior(attackerGob);
-    } else if (attackedChar === 2 && elfHP > 0) {
+    } else if (attackedChar === 2 && elfHP > 0 && battleGoblins[attackerGob].alive > 0) {
       attackElf(attackerGob);
     } else {
-      console.log("Does this work?")
+      if (battleGoblins.some(battleGoblin => battleGoblin.alive === 1)){
       enemyAttack();
+      } else {
+        alert('victory')
+      }
     }
 
   }
@@ -199,7 +213,7 @@ $(document).ready(function(){
   
       console.log("Elf Attacks Goblin " +selectedGoblin + " and deals "+damage+" damage.")
       if (goblinHP < 1) {
-        killGoblin();
+        killGoblin(selectedGoblin);
       }
       playerTurn = false
       enemyAttack();
@@ -224,7 +238,7 @@ $(document).ready(function(){
   
       console.log("Warrior Attacks Goblin "+selectedGoblin+" and deals"+damage+"damage.")
       if (goblinHP < 1) {
-        killGoblin();
+        killGoblin(selectedGoblin);
       }
       playerTurn = false
       enemyAttack();
@@ -236,7 +250,7 @@ $(document).ready(function(){
   }
   
   function vanguardAttack(){
-    console.log(selectedGoblin)
+
     if (playerTurn = true){
   
       let damage = Math.floor(Math.random()*gameData.vanguardStats[vanguardLvl].attack)+1 - Math.floor(Math.random()*battleGoblins[selectedGoblin].defense)+1
@@ -249,7 +263,7 @@ $(document).ready(function(){
       goblinHP = goblinHP - damage
       console.log("Vanguard Attacks Goblin "+selectedGoblin+" and deals"+damage+"damage.")
       if (goblinHP < 1) {
-        killGoblin();
+        killGoblin(selectedGoblin);
       }
       playerTurn = false
       enemyAttack();
@@ -284,8 +298,10 @@ $(document).ready(function(){
     alert('Vanguard has been eliminated from the battle')
   }
 
-  function killGoblin() {
-    alert("Goblin has been eliminated.  You win the battle")
+  function killGoblin(gob) {
+    battleGoblins[gob].alive = 0
+    $(`#`+gob).hide()
+    alert("Goblin "+gob+" has been eliminated.")
   }
   
   function gameOver() {
