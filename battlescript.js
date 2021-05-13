@@ -1,16 +1,16 @@
 $(document).ready(function(){
 
-  if (localStorage.getItem('goblinGameData')) {
-    var gameData = JSON.parse(localStorage.getItem("goblinGameData"))
-    goblinGameData = gameData
-} else {
+//   if (localStorage.getItem('saveData')) {
+//     var savedData = JSON.parse(localStorage.getItem("saveData"))
+//     saveData = savedData
+// } else {
 
-    var gameString = JSON.stringify(goblinGameData)
-    localStorage.setItem("goblinGameData", gameString)
-    var gameData = JSON.parse(localStorage.getItem("goblinGameData"))
-    goblinGameData = gameData
+//     var saveString = JSON.stringify(saveData)
+//     localStorage.setItem("saveData", saveString)
+//     var saveData = JSON.parse(localStorage.getItem("saveData"))
+//     savedData = saveData
 
-}
+// }
 
   class Goblin {
     constructor (type, attack, defense, hitPoints, counterAttack, alive){
@@ -28,10 +28,8 @@ $(document).ready(function(){
   let vanguardLvl = 0
   let warriorLvl = 0
   let elfLvl = 0
-  
-  let vanguardXP = 0
-  let warriorXP = 0
-  let elfXP = 0
+  let warriorSpc = 0
+  let vanguardSpc = 0
   
   let vanguardHP = gameData.vanguardStats[vanguardLvl].hitPoints
   let warriorHP = gameData.warriorStats[warriorLvl].hitPoints
@@ -71,11 +69,11 @@ $(document).ready(function(){
   $('#warriorHP').text('Warrior:'+ ''+warriorHP)
   $('#elfHP').text('Elf:'+ ''+elfHP)
   $('#vanguardattack').hide()
-  $('#vanguardspecial').hide()
+  // $('#vanguardspecial').hide()
   $('#warriorattack').hide()
-  $('#warriorspecial').hide()
+  // $('#warriorspecial').hide()
   $('#elfattack').hide()
-  $('#elfspecial').hide()
+  // $('#elfspecial').hide()
   
   
   $('#elf').on("click", function(){
@@ -90,6 +88,15 @@ $(document).ready(function(){
     vanguardAttack()
   })
 
+  $('#elfspecial').on("click", function(){
+  elfSpecial()})
+
+  $('#warriorspecial').on("click", function(){
+    warriorSpecial()})
+
+  $('#vanguardspecial').on("click", function(){
+    vanguardSpecial()})
+
   $('.goblinButton').on("click", function(){
     selectedGoblinStr = $(this).attr('id')
     selectedGoblin = parseInt(selectedGoblinStr,10)
@@ -100,7 +107,6 @@ $(document).ready(function(){
   
   function enemyAttack(){
 
-    if (battleGoblins)
 
     determineAttack()
 
@@ -109,7 +115,31 @@ $(document).ready(function(){
       let attackedChar = Math.floor(Math.random()*3)
 
 
-    function generateAttack() {  
+    function generateAttack() {
+      
+      warriorSpc = warriorSpc - 1
+      vanguardSpc = vanguardSpc - 1
+
+      if (warriorSpc > 0){
+        gameData.elfStats[elfLvl].attack = gameData.elfStats[elfLvl].attack + gameData.warriorStats[warriorLvl].special
+        gameData.warriorStats[warriorLvl].attack = gameData.warriorStats[warriorLvl].attack + gameData.warriorStats[warriorLvl].special
+        gameData.vanguardStats[vanguardLvl].attack = gameData.vanguardStats[vanguardLvl].attack + gameData.warriorStats[warriorLvl].special
+      } else {
+        gameData.elfStats[elfLvl].attack = gameData.elfStats[elfLvl].maxAttack
+        gameData.warriorStats[warriorLvl].attack = gameData.warriorStats[warriorLvl].maxAttack
+        gameData.vanguardStats[vanguardLvl].attack = gameData.vanguardStats[vanguardLvl].maxAttack
+      }
+
+      if (vanguardSpc > 0) {
+        gameData.elfStats[elfLvl].defense = gameData.elfStats[elfLvl].defense + gameData.vanguardStats[vanguardLvl].special
+        gameData.warriorStats[warriorLvl].defense = gameData.warriorStats[warriorLvl].defense + gameData.vanguardStats[vanguardLvl].special
+        gameData.vanguardStats[vanguardLvl].defense = gameData.vanguardStats[vanguardLvl].defense + gameData.vanguardStats[vanguardLvl].special
+        
+      } else {
+        gameData.elfStats[elfLvl].defense = gameData.elfStats[elfLvl].maxDefense
+        gameData.warriorStats[warriorLvl].defense = gameData.warriorStats[warriorLvl].maxDefense
+        gameData.vanguardStats[vanguardLvl].defense = gameData.vanguardStats[vanguardLvl].maxDefense
+      }
     
     if (attackedChar === 0 && vanguardHP > 0 && battleGoblins[attackerGob].alive > 0) {
       attackVanguard(attackerGob);
@@ -120,6 +150,7 @@ $(document).ready(function(){
     } else {
       if (battleGoblins.some(battleGoblin => battleGoblin.alive === 1)){
       enemyAttack();
+      var x = 1
       } else {
         alert('victory')
       }
@@ -186,10 +217,8 @@ $(document).ready(function(){
       }
       playerAttack();
       }}
-  
-  $('#vanguardHP').text('Vanguard:'+ ''+vanguardHP)
-  $('#warriorHP').text('Warrior:'+ ''+warriorHP)
-  $('#elfHP').text('Elf:'+ ''+elfHP)
+
+  updateHP();
   
     
   }
@@ -215,6 +244,7 @@ $(document).ready(function(){
       if (goblinHP < 1) {
         killGoblin(selectedGoblin);
       }
+
       playerTurn = false
       enemyAttack();
       }
@@ -273,6 +303,13 @@ $(document).ready(function(){
       console.log("It's not your turn!")
     }
   }
+
+  function showElfAbilities(){
+
+  $('#elfattack').show()
+  $('#elfspecial').show()
+
+  }
   
   function killElf() {
     $('#elf').hide();
@@ -302,6 +339,53 @@ $(document).ready(function(){
     battleGoblins[gob].alive = 0
     $(`#`+gob).hide()
     alert("Goblin "+gob+" has been eliminated.")
+  }
+
+  function elfSpecial() {
+
+    
+    vanguardHP = vanguardHP + gameData.elfStats[elfLvl].special
+    warriorHP = warriorHP + gameData.elfStats[elfLvl].special
+    elfHP = elfHP + gameData.elfStats[elfLvl].special
+
+    if (elfHP > gameData.elfStats[elfLvl].maxHP){
+      elfHP = gameData.elfStats[elfLvl].maxHP
+    }
+
+    if (vanguardHP > gameData.vanguardStats[vanguardLvl].maxHP){
+      vanguardHP = gameData.vanguardStats[vanguardLvl].maxHP
+    }
+
+    if (warriorHP > gameData.warriorStats[warriorLvl].maxHP){
+      warriorHP = gameData.warriorStats[warriorLvl].maxHP
+    }
+
+    console.log("Elf restores "+gameData.elfStats[elfLvl].special+" HP to all characters.")
+
+    updateHP();
+
+    enemyAttack();
+
+  }
+
+  function warriorSpecial() {
+    warriorSpc = 2
+    console.log("Warrior boosts attack of all characters by "+gameData.warriorStats[warriorLvl].special)
+    enemyAttack()
+  }
+
+  function vanguardSpecial() {
+    vanguardSpc = 2
+    console.log("Vanguard boosts defense of all characters by "+gameData.vanguardStats[vanguardLvl].special)
+    enemyAttack()
+  }
+
+  function updateHP(){
+
+  $('#vanguardHP').text('Vanguard:'+ ''+vanguardHP)
+  $('#warriorHP').text('Warrior:'+ ''+warriorHP)
+  $('#elfHP').text('Elf:'+ ''+elfHP)
+
   }
   
   function gameOver() {
