@@ -212,5 +212,63 @@ let saveData = {
     {elf: 0},
     {warrior: 0},
     {vanguard: 0},
+  ],
+
+  lvl: [
+    {elf: 0},
+    {warrior: 0},
+    {vanguard: 0},
   ]
 }
+
+class Goblin {
+  constructor (type, attack, defense, hitPoints, counterAttack, alive){
+    this.type = type;
+    this.attack = attack;
+    this.defense = defense;
+    this.hitPoints = hitPoints;
+    this.counterAttack = counterAttack;
+    this.alive = alive;
+  }
+}
+
+let battleGoblins = []
+let selectedGoblin = 0
+let vanguardLvl = 0
+let warriorLvl = 0
+let elfLvl = 0
+let goblinLvl = 0
+let warriorSpc = 0
+let vanguardSpc = 0
+
+let vanguardHP = gameData.vanguardStats[vanguardLvl].hitPoints
+let vanguardMaxHP = gameData.vanguardStats[vanguardLvl].maxHP
+let vanguardAtk = gameData.vanguardStats[vanguardLvl].attack
+let vanguardMaxAtk = gameData.vanguardStats[vanguardLvl].maxAttack
+let vanguardDef = gameData.vanguardStats[vanguardLvl].defense
+let vanguardMaxDef = gameData.vanguardStats[vanguardLvl].maxDefense
+let vanguardSpecMove = gameData.vanguardStats[vanguardLvl].special
+
+let warriorHP = gameData.warriorStats[warriorLvl].hitPoints
+let warriorMaxHP = gameData.warriorStats[warriorLvl].maxHP
+let warriorAtk = gameData.warriorStats[warriorLvl].attack
+let warriorMaxAtk = gameData.warriorStats[warriorLvl].maxAttack
+let warriorDef = gameData.warriorStats[warriorLvl].defense
+let warriorMaxDef = gameData.warriorStats[warriorLvl].maxDefense
+let warriorSpecMove = gameData.warriorStats[warriorLvl].special
+
+let elfHP = gameData.elfStats[elfLvl].hitPoints
+let elfMaxHP = gameData.elfStats[elfLvl].maxHP
+let elfAtk = gameData.elfStats[elfLvl].attack
+let elfMaxAtk = gameData.elfStats[elfLvl].maxAttack
+let elfDef = gameData.elfStats[elfLvl].defense
+let elfMaxDef = gameData.elfStats[elfLvl].maxDefense
+let elfSpecMove = gameData.elfStats[elfLvl].special
+
+let goblinHP = gameData.goblinStats[goblinLvl].hitPoints
+let goblinType = gameData.goblinStats[goblinLvl].type
+let goblinAttack = gameData.goblinStats[goblinLvl].attack
+let goblinDefense = gameData.goblinStats[goblinLvl].defense
+let goblinCounterAttack = gameData.goblinStats[0].counterAttack
+
+let playerTurn = false
