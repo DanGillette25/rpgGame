@@ -168,7 +168,7 @@ goblinStats: [
     attack: 4,
     defense: 2,
     hitPoints: 10,
-    counterAttack: false
+    counterAttack: 0
   },
 
   {
@@ -176,7 +176,7 @@ goblinStats: [
     attack: 7,
     defense: 6,
     hitPoints: 13,
-    counterAttack: true
+    counterAttack: 1
   },
 
   {
@@ -184,7 +184,7 @@ goblinStats: [
     attack: 7,
     defense: 6,
     hitPoints: 13,
-    counterAttack: false
+    counterAttack: 0
   },
 
   {
@@ -192,7 +192,7 @@ goblinStats: [
     attack: 7,
     defense: 6,
     hitPoints: 13,
-    counterAttack: true
+    counterAttack: 1
   },
 
   {
@@ -200,7 +200,7 @@ goblinStats: [
     attack: 7,
     defense: 6,
     hitPoints: 13,
-    counterAttack: true
+    counterAttack: 1
   },
 
 ],
@@ -237,9 +237,12 @@ let selectedGoblin = 0
 let vanguardLvl = 0
 let warriorLvl = 0
 let elfLvl = 0
-let goblinLvl = 0
+let goblinLvl = 1
 let warriorSpc = 0
 let vanguardSpc = 0
+let vanguardAlive = 1
+let elfAlive = 1
+let warriorAlive = 1
 
 let vanguardHP = gameData.vanguardStats[vanguardLvl].hitPoints
 let vanguardMaxHP = gameData.vanguardStats[vanguardLvl].maxHP
@@ -269,6 +272,6 @@ let goblinHP = gameData.goblinStats[goblinLvl].hitPoints
 let goblinType = gameData.goblinStats[goblinLvl].type
 let goblinAttack = gameData.goblinStats[goblinLvl].attack
 let goblinDefense = gameData.goblinStats[goblinLvl].defense
-let goblinCounterAttack = gameData.goblinStats[0].counterAttack
+let goblinCounterAtk = gameData.goblinStats[goblinLvl].counterAttack
 
 let playerTurn = false
