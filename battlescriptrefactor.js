@@ -1,9 +1,106 @@
 $(document).ready(function(){
-    
+
+    $('#elf').hide()
+    $('#warrior').hide()
+    $('#vanguard').hide()
+    $('#vanguardattack').hide()
+    $('#vanguardspecial').hide()
+    $('#warriorattack').hide()
+    $('#warriorspecial').hide()
+    $('#elfattack').hide()
+    $('#elfspecial').hide()
+    $('#goblins').hide()
+    $('#hpdiv').hide()
+
+    updateDifficulty()
+
+    if (goblinLvl < 1) {
+      $('#lvldown').hide()
+    }
+ 
+   $('#startbutton').on("click", function(){
+    $('#startbutton').hide()
+    $('#lvldown').hide()
+    $('#lvlup').hide()
+    startBattle()
+   })
+
+   $(document).on("click", "#lvldown", function(event){
+    event.preventDefault()
+    $('#lvlup').show()
+    goblinLvl = goblinLvl - 1
+    if (goblinLvl < 1) {
+      goblinLvl = 0
+      $('#lvldown').hide()
+      
+    }
+    updateDifficulty();
+  })
+
+  $(document).on("click", "#lvlup", function(event){
+    event.preventDefault()
+    $('#lvldown').show()
+    goblinLvl = goblinLvl + 1
+    if (goblinLvl > 4) {
+      goblinLvl = 4
+      $('#lvlup').hide()
+      
+    }
+    updateDifficulty();
+  })
+
+    function startBattle(){
+    elfLvl = storageData.lvl[0].elf
+
+    elfHP = gameData.elfStats[elfLvl].hitPoints
+    elfMaxHP = gameData.elfStats[elfLvl].maxHP
+    elfAtk = gameData.elfStats[elfLvl].attack
+    elfMaxAtk = gameData.elfStats[elfLvl].maxAttack
+    elfDef = gameData.elfStats[elfLvl].defense
+    elfMaxDef = gameData.elfStats[elfLvl].maxDefense
+    elfSpecMove = gameData.elfStats[elfLvl].special
+    elfPE = 0
+
+    warriorHP = gameData.warriorStats[warriorLvl].hitPoints
+    warriorMaxHP = gameData.warriorStats[warriorLvl].maxHP
+    warriorAtk = gameData.warriorStats[warriorLvl].attack
+    warriorMaxAtk = gameData.warriorStats[warriorLvl].maxAttack
+    warriorDef = gameData.warriorStats[warriorLvl].defense
+    warriorMaxDef = gameData.warriorStats[warriorLvl].maxDefense
+    warriorSpecMove = gameData.warriorStats[warriorLvl].special
+    warriorPE = 0
+
+    vanguardHP = gameData.vanguardStats[vanguardLvl].hitPoints
+    vanguardMaxHP = gameData.vanguardStats[vanguardLvl].maxHP
+    vanguardAtk = gameData.vanguardStats[vanguardLvl].attack
+    vanguardMaxAtk = gameData.vanguardStats[vanguardLvl].maxAttack
+    vanguardDef = gameData.vanguardStats[vanguardLvl].defense
+    vanguardMaxDef = gameData.vanguardStats[vanguardLvl].maxDefense
+    vanguardSpecMove = gameData.vanguardStats[vanguardLvl].special
+    vanguardPE = 0
+
+    elfLvlFactor = elfLvl + 1
+    warriorLvlFactor = warriorLvl + 1
+    vanguardLvlFactor = vanguardLvl + 1
+
+    $('#elf').show()
+    $('#warrior').show()
+    $('#vanguard').show()
+    $('#goblins').show()
+    $('#hpdiv').show()
+    $('#difficulty').hide()
     generateGoblins()
     selectRandomGoblin()
+    enemyAttack();
+    
+   }
   
     function generateGoblins() {
+      goblinHP = gameData.goblinStats[goblinLvl].hitPoints
+      goblinType = gameData.goblinStats[goblinLvl].type
+      goblinAttack = gameData.goblinStats[goblinLvl].attack
+      goblinDefense = gameData.goblinStats[goblinLvl].defense
+      goblinCounterAtk = gameData.goblinStats[goblinLvl].counterAttack
       let numGoblins = Math.floor(Math.random()*3)+1
       for (let i=0;i<numGoblins;i++){
         let newGoblin = new Goblin(goblinType,
@@ -12,12 +109,9 @@ $(document).ready(function(){
           goblinHP,
           goblinCounterAtk,
           1)
-  
-          battleGoblins.push(newGoblin)
-          
-          
+          battleGoblins.push(newGoblin)  
       }
-  
+      
       for (let i=0; i<battleGoblins.length; i++){
         let goblinButton = $('<button>')
         goblinButton.attr('id',i)
@@ -25,19 +119,12 @@ $(document).ready(function(){
         goblinButton.text("Goblin"+' '+i)
         $('#goblins').append(goblinButton)
       }
-  
+      
     }
   
     $('#vanguardHP').text('Vanguard:'+ ''+vanguardHP)
     $('#warriorHP').text('Warrior:'+ ''+warriorHP)
     $('#elfHP').text('Elf:'+ ''+elfHP)
-    $('#vanguardattack').hide()
-    $('#vanguardspecial').hide()
-    $('#warriorattack').hide()
-    $('#warriorspecial').hide()
-    $('#elfattack').hide()
-    $('#elfspecial').hide()
-    
     
     $('#elf').on("click", function(){
       $(this).addClass('playerselected')
@@ -81,7 +168,9 @@ $(document).ready(function(){
     $('#vanguardspecial').on("click", function(){
       vanguardSpecial()})
   
-    $('.goblinButton').on("click", function(){
+    
+    $(document).on("click", ".goblinButton", function(){
+      
       selectedGoblinStr = $(this).attr('id')
       selectedGoblin = parseInt(selectedGoblinStr,10)
       goblinHP = battleGoblins[selectedGoblin].hitPoints
@@ -92,15 +181,14 @@ $(document).ready(function(){
           $(this).removeClass('enemyselected')
          }
        
-      
     })
 
   })  
-    enemyAttack();
+    
     
     function enemyAttack(){
   
-  
+  setTimeout(function(){
       determineAttack()
   
       function determineAttack(){
@@ -145,7 +233,9 @@ $(document).ready(function(){
         enemyAttack();
         var x = 1
         } else {
-          console.log('victory')
+          textArray.push('Victory')
+          updateText()
+          victorySeq(elfPE, warriorPE, vanguardPE)
         }
       }
   
@@ -153,19 +243,20 @@ $(document).ready(function(){
   
     generateAttack()
   
-      }  
+      }  },1000)
     
     function attackVanguard(atk){
         let damage = Math.floor(Math.random()*battleGoblins[atk].attack)+1 - Math.floor(Math.random()*vanguardDef)+1
         if (damage <= 0){
           damage = 0
-          console.log(goblinType+" Missed!")
+          textArray.push(goblinType+" Missed!")
+          updateText()
           playerAttack();
         } else {
         vanguardHP = vanguardHP - damage
     
-        console.log(goblinType+ " Attacks Vanguard and deals"+damage+"damage. "+atk)
-      
+        textArray.push(goblinType+ " Attacks Vanguard and deals"+damage+"damage. "+atk)
+        updateText()
         determineIfDead()
         playerAttack();
         }
@@ -176,121 +267,140 @@ $(document).ready(function(){
         let damage = Math.floor(Math.random()*battleGoblins[atk].attack)+1 - Math.floor(Math.random()*warriorDef)+1
         if (damage <= 0){
           damage = 0
-          console.log(goblinType+" Missed!")
+          textArray.push(goblinType+" Missed!")
+          updateText()
           playerAttack();
         } else {
         warriorHP = warriorHP - damage
     
-        console.log(goblinType+ " Attacks Warrior and deals"+damage+"damage. " +atk)
-        
+        textArray.push(goblinType+ " Attacks Warrior and deals"+damage+"damage. " +atk)
+        updateText()
         determineIfDead()
         playerAttack();
         }
       }
-    
-      
-    
+
       function attackElf(atk){
     
         let damage = Math.floor(Math.random()*battleGoblins[atk].attack)+1 - Math.floor(Math.random()*elfDef)+1
         if (damage <= 0){
           damage = 0
-          console.log(goblinType+" Missed!")
+          textArray.push(goblinType+" Missed!")
+          updateText()
           playerAttack();
         } else {
         elfHP = elfHP - damage
   
-        console.log(goblinType+" Attacks Elf and deals"+damage+"damage. " +atk)
-        
+        textArray.push(goblinType+" Attacks Elf and deals"+damage+"damage. " +atk)
+        updateText()
         determineIfDead();
         playerAttack();
         }}
   
     updateHP();
     
-      
     }
-      
     
     function playerAttack(){
-      playerTurn = true;
+      playerTurn = 1;
     }
     
     function elfAttack(){
-      if (playerTurn = true){
-    
+      
+      if (playerTurn > 0){
+        playerTurn = 0
+        setTimeout(function(){
         let damage = Math.floor(Math.random()*elfAtk)+1 - Math.floor(Math.random()*battleGoblins[selectedGoblin].defense)+1
         if (damage <= 0){
           damage = 0
-          console.log("Elf Missed!")
-          playerTurn = false
+          playerTurn = 0
+          textArray.push("Elf Missed!")
+          updateText()
           enemyAttack();
         } else {
         goblinHP = goblinHP - damage
-    
-        console.log("Elf Attacks " +goblinType + " and deals "+damage+" damage.")
+        elfPE = elfPE +1
+        textArray.push("Elf Attacks " +goblinType + " and deals "+damage+" damage.")
+        updateText()
         if (goblinHP < 1) {
           killGoblin(selectedGoblin);
         } else {
   
-        playerTurn = false
+        playerTurn = 0
         goblinCounterAttack('elf', elfDef);
         }}
-    
+      }, 1000)
       } else {
-        console.log("It's not your turn!")
+        textArray.push("It's not your turn!")
+        updateText()
       }
+
+    
     }
     
     function warriorAttack(){
-      if (playerTurn = true){
-    
+      
+      if (playerTurn > 0){
+        playerTurn = 0
+        setTimeout(function(){
         let damage = Math.floor(Math.random()*warriorAtk)+1 - Math.floor(Math.random()*battleGoblins[selectedGoblin].defense)+1
         if (damage <= 0){
           damage = 0
-          console.log("Warrior Missed!")
-          playerTurn = false
+          textArray.push("Warrior Missed!")
+          updateText()
+          playerTurn = 0
           enemyAttack();
         } else {
+        playterTurn = 0
         goblinHP = goblinHP - damage
-    
-        console.log("Warrior Attacks "+goblinType+" and deals "+damage+" damage.")
+        warriorPE = warriorPE +1
+        textArray.push("Warrior Attacks "+goblinType+" and deals "+damage+" damage.")
+        updateText()
         if (goblinHP < 1) {
           killGoblin(selectedGoblin);
         } else{
-        playerTurn = false
+        playerTurn = 0
         goblinCounterAttack('warrior', warriorDef);
         }}
-    
+      },1000)
       } else {
-        console.log("It's not your turn!")
+        textArray.push("It's not your turn!")
+        updateText()
       }
+    
     }
     
     function vanguardAttack(){
   
-      if (playerTurn = true){
-    
+      
+      if (playerTurn > 0){
+        playerTurn = 0
+        setTimeout(function(){
         let damage = Math.floor(Math.random()*vanguardAtk)+1 - Math.floor(Math.random()*battleGoblins[selectedGoblin].defense)+1
         if (damage <= 0){
           damage = 0
-          console.log("Vanguard Missed!")
-          playerTurn = false
+          textArray.push("Vanguard Missed!")
+          updateText()
+          playerTurn = 0
           enemyAttack();
         } else {
         goblinHP = goblinHP - damage
-        console.log("Vanguard Attacks "+goblinType+" and deals "+damage+" damage.")
+        vanguardPE = vanguardPE +1
+        textArray.push("Vanguard Attacks "+goblinType+" and deals "+damage+" damage.")
+        updateText()
         if (goblinHP < 1) {
           killGoblin(selectedGoblin);
         } else {
-        playerTurn = false
+        
         goblinCounterAttack('vanguard', vanguardDef);
         }}
-    
+      },1000)
       } else {
-        console.log("It's not your turn!")
-      }
+      textArray.push("It's not your turn!")
+      updateText()
     }
+
+  }
 
     function selectRandomGoblin(){
       let selected = Math.floor(Math.random()*battleGoblins.length)
@@ -299,7 +409,6 @@ $(document).ready(function(){
       } else {
         selectedGoblin = selected
         goblinHP = battleGoblins[selectedGoblin].hitPoints
-        console.log(goblinHP)
         highlightSelectedGoblin(selectedGoblin)
       }
     }
@@ -334,12 +443,15 @@ $(document).ready(function(){
       $('#elf').hide();
       $('#elfattack').hide();
       $('#elfspecial').hide();
+      $('#elfHP').hide();
       elfAlive = 0
+      elfPE = 0
       if (warriorHP < 1 && vanguardHP < 1 && elfHP < 1){
         gameOver();
       }
-      console.log('Elf has been eliminated from the battle')
-      alert('Elf has been eliminated from the battle')
+      textArray.push('Elf has been eliminated from the battle')
+      updateText()
+      //alert('Elf has been eliminated from the battle')
     }
 
     function showWarriorAbilities(){
@@ -357,12 +469,15 @@ $(document).ready(function(){
       $('#warrior').hide();
       $('#warriorattack').hide();
       $('#warriorspecial').hide();
+      $('#warriorHP').hide();
+
       warriorAlive = 0
       if (warriorHP < 1 && vanguardHP < 1 && elfHP < 1){
         gameOver();
       }
-      console.log('warrior has been eliminated from the battle')
-      alert('warrior has been eliminated from the battle')
+      textArray.push('warrior has been eliminated from the battle')
+      updateText()
+      //alert('warrior has been eliminated from the battle')
     }
 
     function showVanguardAbilities(){
@@ -380,19 +495,22 @@ $(document).ready(function(){
       $('#vanguard').hide();
       $('#vanguardattack').hide();
       $('#vanguardspecial').hide();
+      $('#vanguardHP').hide();
       vanguardAlive = 0
       if (warriorHP < 1 && vanguardHP < 1 && elfHP < 1){
         gameOver();
       }
-      console.log('Vanguard has been eliminated from the battle')
-      alert('Vanguard has been eliminated from the battle')
+      textArray.push('Vanguard has been eliminated from the battle')
+      updateText()
+      //alert('Vanguard has been eliminated from the battle')
     }
   
     function killGoblin(gob) {
       battleGoblins[gob].alive = 0
       $(`#`+gob).hide()
-      console.log("Goblin "+gob+" has been eliminated.")
-      alert("Goblin "+gob+" has been eliminated.")
+      textArray.push("Goblin "+gob+" has been eliminated.")
+      updateText()
+      //alert("Goblin "+gob+" has been eliminated.")
        if (battleGoblins.some(battleGoblin => battleGoblin.alive === 1)){
       selectRandomGoblin()
     }
@@ -401,10 +519,14 @@ $(document).ready(function(){
   
     function elfSpecial() {
   
+      if (elfSP > 0 && playerTurn > 0){
+        playerTurn = 0
       
       vanguardHP = vanguardHP + elfSpecMove
       warriorHP = warriorHP + elfSpecMove
       elfHP = elfHP + elfSpecMove
+
+      elfSP = elfSP - 1
   
       if (elfHP > elfMaxHP){
         elfHP = elfMaxHP
@@ -417,43 +539,99 @@ $(document).ready(function(){
       if (warriorHP > warriorMaxHP){
         warriorHP = warriorMaxHP
       }
-  
-      console.log("Elf restores "+elfSpecMove+" HP to all party members.")
-  
+      setTimeout(function(){
+      textArray.push("Elf restores "+elfSpecMove+" HP to all party members.")
+      updateText()
       updateHP();
   
       enemyAttack();
+
+    },1000)
+
+  } else if(elfSP < 1){
+    
+      textArray.push('Not enough SP')
+      updateText()
+  } else{
+
+    textArray.push("It's not your turn")
+      updateText()
+
+  }
   
     }
   
     function warriorSpecial() {
+    if (playerTurn > 0 && warriorSP > 0){
+      playerTurn = 0
+      setTimeout(function(){
       warriorSpc = 2
-      console.log("Warrior Rallys")
+      warriorSP = warriorSP - 1
+      textArray.push("Warrior Rallies and boosts attack of all characters by "+warriorSpecMove)
+      updateText()
       enemyAttack()
+    },1000)
+
+  } else if(warriorSP < 1){
+      
+        textArray.push('Not enough SP')
+        updateText()
+      
+  } else {
+
+      textArray.push("It's not your turn")
+      updateText()
+
+  }
+    
     }
   
     function vanguardSpecial() {
-      vanguardSpc = 2
-      console.log("Vanguard boosts defense of all characters by ")
-      enemyAttack()
+
+      if (playerTurn > 0 && vanguardSP > 0){
+        playerTurn = 0
+        setTimeout(function(){
+        vanguardSpc = 2
+        vanguardSP = vanguardSP - 1
+        textArray.push("Vanguard boosts defense of all characters by "+vanguardSpecMove)
+        updateText()
+        enemyAttack()
+      },1000)
+  
+    } else if(vanguardSP < 1){
+        
+          textArray.push('Not enough SP')
+          updateText()
+        
+    } else {
+  
+        textArray.push("It's not your turn")
+        updateText()
+  
+    }
     }
   
     
 
     function goblinCounterAttack(char, def){
       if (battleGoblins[selectedGoblin].counterAttack > 0){
+        setTimeout(function(){
         determineCounterAttack()
+      },1000)
       } else {
         enemyAttack()
       }
       function determineCounterAttack(){
+        
       let atkOrNot = Math.floor(Math.random()*2)
+    
       if (atkOrNot === 1){
         let damageFactor = Math.floor(Math.random()*battleGoblins[selectedGoblin].attack)+1 - Math.floor(Math.random()*def)+1
         let damage = Math.floor(damageFactor/2)
 
         if (damage < 1){
-          console.log(goblinType+" counterattack missed!")
+          textArray.push(goblinType+" counterattack missed!")
+          updateText()
           enemyAttack()
         }else{
         switch (char){
@@ -464,7 +642,9 @@ $(document).ready(function(){
           case "elf":
             elfHP = elfHP - damage;
         }
-        console.log(goblinType+" counterattacks "+char+" and deals "+damage+" damage")
+        textArray.push(goblinType+" counterattacks "+char+" and deals "+damage+" damage")
+      
+        updateText()
         determineIfDead()
         updateHP()
         enemyAttack()
@@ -495,10 +675,168 @@ $(document).ready(function(){
       $('#elfHP').text('Elf:'+ ''+elfHP)
       
       }
+
+    function updateText() {
+
+      if (textArray.length > 3){
+        textArray.splice(0,1)
+      }
+
+      $('#messagea').text(textArray[0])
+      $('#messageb').text(textArray[1])
+      $('#messagec').text(textArray[2])
+    
+    }
+
+    function updateDifficulty(){
+      $('#difficulty').text(goblinLvl)
+    }
+
+    function victorySeq(elfxp, warriorxp, vanguardxp){
+
+      let battleBaseExp = gameData.goblinStats[goblinLvl].baseExp
+      elfExp = elfExp + elfxp + battleBaseExp
+      warriorExp = warriorExp + warriorxp + battleBaseExp
+      vanguardExp = vanguardExp + vanguardxp + battleBaseExp
+
+      storageData.xp[0].elf = elfExp
+      let xpStringE = JSON.stringify(storageData)
+      localStorage.setItem('goblinSaveData', xpStringE)
+      elfExp = JSON.parse(localStorage.getItem('goblinSaveData')).xp[0].elf
+
+      storageData.xp[1].warrior = warriorExp
+      let xpStringW = JSON.stringify(storageData)
+      localStorage.setItem('goblinSaveData', xpStringW)
+      warriorExp = JSON.parse(localStorage.getItem('goblinSaveData')).xp[1].warrior
+      
+      storageData.xp[2].vanguard = vanguardExp
+      let xpStringV = JSON.stringify(storageData)
+      localStorage.setItem('goblinSaveData', xpStringV)
+      vanguardExp = JSON.parse(localStorage.getItem('goblinSaveData')).xp[2].vanguard
+
+      if (elfExp > elfLvl*10){
+        elfLevelUp()
+      } else if (warriorExp > warriorLvlFactor*10){
+        warriorLevelUp()
+      } else if (vanguardExp > vanguardLvlFactor*10){
+        vanguardLevelUp()
+      } else {
+        resetBattleScreen()
+      }
+
+    }
+
+    function elfLevelUp() {
+      elfLvl = elfLvl + 1
+      if (elfLvl>4){
+        elfLvl=4
+        resetBattleScreen()
+        return;
+      } else{
+      storageData.lvl[0].elf = elfLvl
+      let levelString = JSON.stringify(storageData)
+      localStorage.setItem('goblinSaveData', levelString)
+      elfLvl = JSON.parse(localStorage.getItem('goblinSaveData')).lvl[0].elf
+      alert('elf has leveled up')
+      elfExp = 0
+      storageData.xp[0].elf = elfExp
+      let xpString = JSON.stringify(storageData)
+      localStorage.setItem('goblinSaveData', xpString)
+      elfExp = JSON.parse(localStorage.getItem('goblinSaveData')).xp[0].elf
+
+      if (warriorExp > warriorLvlFactor*10){
+        warriorLevelUp()
+      } else if (vanguardExp > vanguardLvlFactor*10){
+        vanguardLevelUp()
+      } else{
+      resetBattleScreen()
+      }
+    }
+    }
+
+    function warriorLevelUp() {
+      warriorLvl = warriorLvl + 1
+      if (warriorLvl>4){
+        warriorLvl=4
+        resetBattleScreen()
+        return;
+      } else{
+      storageData.lvl[1].warrior = warriorLvl
+      let levelString = JSON.stringify(storageData)
+      localStorage.setItem('goblinSaveData', levelString)
+      warriorLvl = JSON.parse(localStorage.getItem('goblinSaveData')).lvl[1].warrior
+      alert('warrior has leveled up')
+      warriorExp = 0
+      storageData.xp[1].warrior = warriorExp
+      let xpString = JSON.stringify(storageData)
+      localStorage.setItem('goblinSaveData', xpString)
+      warriorExp = JSON.parse(localStorage.getItem('goblinSaveData')).xp[1].warrior
+      
+      if (vanguardExp > vanguardLvlFactor*10){
+        vanguardLevelUp()
+      } else {
+      resetBattleScreen()
+      }
+
+    }
+    }
+
+    function vanguardLevelUp() {
+      vanguardLvl = vanguardLvl + 1
+      if (vanguardLvl>4){
+        vanguardLvl=4
+        resetBattleScreen()
+        return;
+      } else {
+      storageData.lvl[2].vanguard = vanguardLvl
+      let levelString = JSON.stringify(storageData)
+      localStorage.setItem('goblinSaveData', levelString)
+      vanguardLvl = JSON.parse(localStorage.getItem('goblinSaveData')).lvl[2].vanguard
+      alert('vanguard has leveled up')
+      vanguardExp = 0
+      storageData.xp[2].vanguard = vanguardExp
+      let xpString = JSON.stringify(storageData)
+      localStorage.setItem('goblinSaveData', xpString)
+      vanguardExp = JSON.parse(localStorage.getItem('goblinSaveData')).xp[2].vanguard
+      resetBattleScreen()
+      }
+    }
+
+    function resetBattleScreen() {
+
+      elfHP = gameData.elfStats[elfLvl].hitPoints
+      warriorHP = gameData.warriorStats[warriorLvl].hitPoints
+      gameData.vanguardStats[vanguardLvl].hitPoints
+
+      battleGoblins = []
+
+      $('#elf').hide()
+      $('#warrior').hide()
+      $('#vanguard').hide()
+      $('#vanguardattack').hide()
+      $('#vanguardspecial').hide()
+      $('#warriorattack').hide()
+      $('#warriorspecial').hide()
+      $('#elfattack').hide()
+      $('#elfspecial').hide()
+      $(".goblinButton").remove()
+      $('#hpdiv').hide()
+      $('#startbutton').show()
+      $('#lvldown').show()
+      $('#lvlup').show()
+      $('#difficulty').show()
+      $('#messageb').empty()
+      $('#messagea').empty()
+
+    }
     
     function gameOver() {
-      console.log('Game Over')
+      textArray.push('Defeat')
+      updateText()
+      resetBattleScreen();
     }
+
+    
     
     })
     

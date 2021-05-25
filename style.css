@@ -5,3 +5,16 @@
 .enemyselected {
   border: 2px solid red
 }
+
+.inactive {
+  z-index: -1;
+}
+
+#messages {
+  color: white;
+  background-color: black;
+  text-align: center;
+  font-family: 'MedievalSharp', cursive;
+  size: 16;
+  
+}

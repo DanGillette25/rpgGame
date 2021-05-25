@@ -4,39 +4,55 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Goblin Game</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
 </head>
 <body>
+
+  <button id='lvldown'>Previous Cavern</button>
+  <button id='lvlup'>Next Cavern</button>
+  <p id='difficulty'></p>
+  
+  
 
   <div id='goblins'></div>
 
   <br>
-  <div>
+  <div id='vanguarddiv'>
   <button id="vanguard">Vanguard</button>
   <button id='vanguardattack'>Attack</button>
   <button id='vanguardspecial'>Shield</button>
   </div>
   <p>
+  <button id='startbutton'>Battle!</button>
   </p>
-  <div>
+  <div id='warriordiv'>
   <button id="warrior">Warrior</button>
   <button id='warriorattack'>Attack</button>
   <button id='warriorspecial'>Rally</button>
   </div>
   <p>
   </p>
-  <div>
+  <div id='elfdiv'>
   <button id="elf">Elf</button>
   <button id='elfattack'>Attack</button>
   <button id='elfspecial'>Heal</button>
   </div>
   
+  <div id='hpdiv'>
   <p id='vanguardHP'></p>
   <p id='warriorHP'></p>
   <p id='elfHP'></p>
-  
+  </div>
+
+  <div id='messages'>
+  <p id='messagec'></p>
+  <p id='messageb'></p>
+  <p id='messagea'></p>
+  </div>
 
 <script src="./gamedata.js"></script>
 <script src="./battlescriptrefactor.js"></script>

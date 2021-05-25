@@ -8,7 +8,8 @@ let gameData = {
   maxDefense: 5,
   hitPoints: 30,
   maxHP: 30,
-  special: 3
+  special: 3,
+  sp: 3
   },
 
   {
@@ -18,7 +19,8 @@ let gameData = {
     maxDefense: 8,
     hitPoints: 35,
     maxHP: 35,
-    special: 5
+    special: 5,
+    sp: 4
   },
 
   {
@@ -28,7 +30,8 @@ let gameData = {
     maxDefense: 11,
     hitPoints: 38,
     maxHP: 38,
-    special: 7
+    special: 7,
+    sp: 4
   },
 
   {
@@ -38,7 +41,8 @@ let gameData = {
     maxDefense: 14,
     hitPoints: 43,
     maxHP: 43,
-    special: 9
+    special: 9,
+    sp: 5
   },
 
   {
@@ -48,7 +52,8 @@ let gameData = {
     maxDefense: 19,
     hitPoints: 47,
     maxHP: 47,
-    special: 11
+    special: 11,
+    sp: 6
   },
 
 ],
@@ -62,7 +67,8 @@ warriorStats: [
   maxDefense: 4,
   hitPoints: 25,
   maxHP: 25,
-  special: 3
+  special: 3,
+  sp: 3
   },
 
   {
@@ -72,7 +78,8 @@ warriorStats: [
     maxDefense: 6,
     hitPoints: 29,
     maxHP: 29,
-    special: 5
+    special: 5,
+    sp: 4
   },
 
   {
@@ -82,7 +89,8 @@ warriorStats: [
     maxDefense: 11,
     hitPoints: 38,
     maxHP: 38,
-    special: 7
+    special: 7,
+    sp: 5
   },
 
   {
@@ -92,7 +100,8 @@ warriorStats: [
     maxDefense: 14,
     hitPoints: 43,
     maxHP: 43,
-    special: 9
+    special: 9,
+    sp: 6
   },
 
   {
@@ -102,7 +111,8 @@ warriorStats: [
     maxDefense: 19,
     hitPoints: 47,
     maxHP: 47,
-    special: 11
+    special: 11,
+    sp: 7
   },
 
 ],
@@ -116,7 +126,8 @@ elfStats: [
   maxDefense: 3,
   hitPoints: 20,
   maxHP: 20,
-  special: 3
+  special: 3,
+  sp: 3
   },
 
   {
@@ -126,7 +137,8 @@ elfStats: [
     maxDefense: 5,
     hitPoints: 25,
     maxHP: 25,
-    special: 5
+    special: 5,
+    sp: 4
   },
 
   {
@@ -136,7 +148,8 @@ elfStats: [
     maxDefense: 6,
     hitPoints: 28,
     maxHP: 28,
-    special: 7
+    special: 7,
+    sp: 5
   },
 
   {
@@ -146,7 +159,8 @@ elfStats: [
     maxDefense: 9,
     hitPoints: 34,
     maxHP: 34,
-    special: 9
+    special: 9,
+    sp: 6
   },
 
   {
@@ -156,7 +170,8 @@ elfStats: [
     maxDefense: 11,
     hitPoints: 38,
     maxHP: 38,
-    special: 11
+    special: 11,
+    sp: 7
   },
 
 ],
@@ -168,7 +183,8 @@ goblinStats: [
     attack: 4,
     defense: 2,
     hitPoints: 10,
-    counterAttack: 0
+    counterAttack: 0,
+    baseExp: 3
   },
 
   {
@@ -176,31 +192,35 @@ goblinStats: [
     attack: 7,
     defense: 6,
     hitPoints: 13,
-    counterAttack: 1
+    counterAttack: 1,
+    baseExp: 5
   },
 
   {
     type: 'Goblin Berserker',
-    attack: 7,
-    defense: 6,
-    hitPoints: 13,
-    counterAttack: 0
+    attack: 12,
+    defense: 7,
+    hitPoints: 15,
+    counterAttack: 0,
+    baseExp: 7
   },
 
   {
     type: 'Goblin Knight',
-    attack: 7,
+    attack: 15,
     defense: 6,
-    hitPoints: 13,
-    counterAttack: 1
+    hitPoints: 30,
+    counterAttack: 1,
+    baseExp: 12
   },
 
   {
     type: 'Goblin King',
     attack: 7,
     defense: 6,
-    hitPoints: 13,
-    counterAttack: 1
+    hitPoints: 50,
+    counterAttack: 1,
+    baseExp: 15
   },
 
 ],
@@ -209,16 +229,22 @@ goblinStats: [
 
 let saveData = {
   xp: [
-    {elf: 0},
-    {warrior: 0},
-    {vanguard: 0},
+    {elf: 40},
+    {warrior: 40},
+    {vanguard: 40},
   ],
 
   lvl: [
-    {elf: 0},
-    {warrior: 0},
-    {vanguard: 0},
+    {elf: 4},
+    {warrior: 4},
+    {vanguard: 4},
   ]
+}
+
+if (localStorage.getItem('goblinSaveData')){
+  let characterLevels = JSON.parse(localStorage.getItem('goblinSaveData'))
+} else{
+  localStorage.setItem('goblinSaveData', JSON.stringify(saveData))
 }
 
 class Goblin {
@@ -232,12 +258,17 @@ class Goblin {
   }
 }
 
+let storageData = JSON.parse(localStorage.getItem('goblinSaveData'))
+
 let battleGoblins = []
 let selectedGoblin = 0
-let vanguardLvl = 0
-let warriorLvl = 0
-let elfLvl = 0
 let goblinLvl = 1
+let vanguardLvl = storageData.lvl[2].vanguard
+let warriorLvl = storageData.lvl[1].warrior
+let elfLvl = storageData.lvl[0].elf
+let elfExp = storageData.xp[0].elf
+let warriorExp = storageData.xp[1].warrior
+let vanguardExp = storageData.xp[2].vanguard
 let warriorSpc = 0
 let vanguardSpc = 0
 let vanguardAlive = 1
@@ -251,6 +282,8 @@ let vanguardMaxAtk = gameData.vanguardStats[vanguardLvl].maxAttack
 let vanguardDef = gameData.vanguardStats[vanguardLvl].defense
 let vanguardMaxDef = gameData.vanguardStats[vanguardLvl].maxDefense
 let vanguardSpecMove = gameData.vanguardStats[vanguardLvl].special
+let vanguardSP = gameData.vanguardStats[vanguardLvl].sp
+let vanguardPE = 0
 
 let warriorHP = gameData.warriorStats[warriorLvl].hitPoints
 let warriorMaxHP = gameData.warriorStats[warriorLvl].maxHP
@@ -259,6 +292,8 @@ let warriorMaxAtk = gameData.warriorStats[warriorLvl].maxAttack
 let warriorDef = gameData.warriorStats[warriorLvl].defense
 let warriorMaxDef = gameData.warriorStats[warriorLvl].maxDefense
 let warriorSpecMove = gameData.warriorStats[warriorLvl].special
+let warriorSP = gameData.warriorStats[warriorLvl].sp
+let warriorPE = 0
 
 let elfHP = gameData.elfStats[elfLvl].hitPoints
 let elfMaxHP = gameData.elfStats[elfLvl].maxHP
@@ -267,6 +302,8 @@ let elfMaxAtk = gameData.elfStats[elfLvl].maxAttack
 let elfDef = gameData.elfStats[elfLvl].defense
 let elfMaxDef = gameData.elfStats[elfLvl].maxDefense
 let elfSpecMove = gameData.elfStats[elfLvl].special
+let elfSP = gameData.elfStats[elfLvl].sp
+let elfPE = 0
 
 let goblinHP = gameData.goblinStats[goblinLvl].hitPoints
 let goblinType = gameData.goblinStats[goblinLvl].type
@@ -274,4 +311,8 @@ let goblinAttack = gameData.goblinStats[goblinLvl].attack
 let goblinDefense = gameData.goblinStats[goblinLvl].defense
 let goblinCounterAtk = gameData.goblinStats[goblinLvl].counterAttack
 
-let playerTurn = false
+let playerTurn = 0
+let textArray = []
+let elfLvlFactor = elfLvl + 1
+let warriorLvlFactor = warriorLvl + 1
+let vanguardLvlFactor = vanguardLvl + 1
