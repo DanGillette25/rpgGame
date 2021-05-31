@@ -20,7 +20,7 @@ let gameData = {
     hitPoints: 35,
     maxHP: 35,
     special: 5,
-    sp: 4
+    sp: 3
   },
 
   {
@@ -31,7 +31,7 @@ let gameData = {
     hitPoints: 38,
     maxHP: 38,
     special: 7,
-    sp: 4
+    sp: 3
   },
 
   {
@@ -42,7 +42,7 @@ let gameData = {
     hitPoints: 43,
     maxHP: 43,
     special: 9,
-    sp: 5
+    sp: 3
   },
 
   {
@@ -53,7 +53,7 @@ let gameData = {
     hitPoints: 47,
     maxHP: 47,
     special: 11,
-    sp: 6
+    sp: 3
   },
 
 ],
@@ -79,7 +79,7 @@ warriorStats: [
     hitPoints: 29,
     maxHP: 29,
     special: 5,
-    sp: 4
+    sp: 3
   },
 
   {
@@ -90,7 +90,7 @@ warriorStats: [
     hitPoints: 38,
     maxHP: 38,
     special: 7,
-    sp: 5
+    sp: 3
   },
 
   {
@@ -101,7 +101,7 @@ warriorStats: [
     hitPoints: 43,
     maxHP: 43,
     special: 9,
-    sp: 6
+    sp: 3
   },
 
   {
@@ -112,7 +112,7 @@ warriorStats: [
     hitPoints: 47,
     maxHP: 47,
     special: 11,
-    sp: 7
+    sp: 3
   },
 
 ],
@@ -138,7 +138,7 @@ elfStats: [
     hitPoints: 25,
     maxHP: 25,
     special: 5,
-    sp: 4
+    sp: 3
   },
 
   {
@@ -149,7 +149,7 @@ elfStats: [
     hitPoints: 28,
     maxHP: 28,
     special: 7,
-    sp: 5
+    sp: 3
   },
 
   {
@@ -160,7 +160,7 @@ elfStats: [
     hitPoints: 34,
     maxHP: 34,
     special: 9,
-    sp: 6
+    sp: 3
   },
 
   {
@@ -171,7 +171,7 @@ elfStats: [
     hitPoints: 38,
     maxHP: 38,
     special: 11,
-    sp: 7
+    sp: 3
   },
 
 ],
@@ -180,6 +180,7 @@ goblinStats: [
 
   {
     type: 'Goblin Squire',
+    png: 'goblinsquire',
     attack: 4,
     defense: 2,
     hitPoints: 10,
@@ -189,6 +190,7 @@ goblinStats: [
 
   {
     type: 'Goblin Ranger',
+    png: 'goblinranger',
     attack: 7,
     defense: 6,
     hitPoints: 13,
@@ -198,6 +200,7 @@ goblinStats: [
 
   {
     type: 'Goblin Berserker',
+    png: 'goblinberserker',
     attack: 12,
     defense: 7,
     hitPoints: 15,
@@ -207,17 +210,19 @@ goblinStats: [
 
   {
     type: 'Goblin Knight',
+    png: 'goblinknight',
     attack: 15,
-    defense: 6,
+    defense: 12,
     hitPoints: 30,
     counterAttack: 1,
     baseExp: 12
   },
 
   {
-    type: 'Goblin King',
-    attack: 7,
-    defense: 6,
+    type: 'Goblin Destroyer',
+    png: 'goblindestroyer',
+    attack: 25,
+    defense: 15,
     hitPoints: 50,
     counterAttack: 1,
     baseExp: 15
@@ -229,15 +234,15 @@ goblinStats: [
 
 let saveData = {
   xp: [
-    {elf: 40},
-    {warrior: 40},
-    {vanguard: 40},
+    {elf: 0},
+    {warrior: 0},
+    {vanguard: 0},
   ],
 
   lvl: [
-    {elf: 4},
-    {warrior: 4},
-    {vanguard: 4},
+    {elf: 0},
+    {warrior: 0},
+    {vanguard: 0},
   ]
 }
 

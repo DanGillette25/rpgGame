@@ -1,16 +1,40 @@
 $(document).ready(function(){
 
-    $('#elf').hide()
-    $('#warrior').hide()
-    $('#vanguard').hide()
-    $('#vanguardattack').hide()
-    $('#vanguardspecial').hide()
-    $('#warriorattack').hide()
-    $('#warriorspecial').hide()
-    $('#elfattack').hide()
-    $('#elfspecial').hide()
+    let span = document.getElementsByClassName("close")[0];
+    let modal = document.getElementById('instrModal')
+
+    span.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    
+
     $('#goblins').hide()
-    $('#hpdiv').hide()
+    $('#credits').show()
+    $('#instructions').hide()
+    $('#instructionsBtn').show()
+    $('#creditsBtn').hide()
+
+
+    $('#instructionsBtn').on('click',function(){
+      $('#credits').hide()
+      $('#creditsBtn').show()
+      $('#instructions').show()
+      $('#instructionsBtn').hide()
+    })
+
+    $('#creditsBtn').on('click',function(){
+      $('#credits').show()
+      $('#creditsBtn').hide()
+      $('#instructions').hide()
+      $('#instructionsBtn').show()
+    })
 
     updateDifficulty()
 
@@ -49,6 +73,30 @@ $(document).ready(function(){
     updateDifficulty();
   })
 
+  $('#vanguardHP').text('Vanguard:'+ ''+vanguardHP)
+    $('#warriorHP').text('Warrior:'+ ''+warriorHP)
+    $('#elfHP').text('Elf:'+ ''+elfHP)
+    
+  
+    
+    $(document).on("click", ".goblinButton", function(){
+      
+      selectedGoblinStr = $(this).attr('name')
+      selectedGoblin = parseInt(selectedGoblinStr,10)
+      goblinHP = battleGoblins[selectedGoblin].hitPoints
+      
+      $(this).addClass('enemyselected')
+      $('.goblinButton').each(function(){
+        if ($(this).attr('name') != selectedGoblin){
+          $(this).removeClass('enemyselected')
+         }
+       
+    })
+
+  })
+
+})
+
     function startBattle(){
     elfLvl = storageData.lvl[0].elf
 
@@ -60,6 +108,7 @@ $(document).ready(function(){
     elfMaxDef = gameData.elfStats[elfLvl].maxDefense
     elfSpecMove = gameData.elfStats[elfLvl].special
     elfPE = 0
+    elfSP = 3
 
     warriorHP = gameData.warriorStats[warriorLvl].hitPoints
     warriorMaxHP = gameData.warriorStats[warriorLvl].maxHP
@@ -69,6 +118,7 @@ $(document).ready(function(){
     warriorMaxDef = gameData.warriorStats[warriorLvl].maxDefense
     warriorSpecMove = gameData.warriorStats[warriorLvl].special
     warriorPE = 0
+    warriorSP = 3
 
     vanguardHP = gameData.vanguardStats[vanguardLvl].hitPoints
     vanguardMaxHP = gameData.vanguardStats[vanguardLvl].maxHP
@@ -78,17 +128,20 @@ $(document).ready(function(){
     vanguardMaxDef = gameData.vanguardStats[vanguardLvl].maxDefense
     vanguardSpecMove = gameData.vanguardStats[vanguardLvl].special
     vanguardPE = 0
+    vanguardSP = 3
 
     elfLvlFactor = elfLvl + 1
     warriorLvlFactor = warriorLvl + 1
     vanguardLvlFactor = vanguardLvl + 1
 
-    $('#elf').show()
-    $('#warrior').show()
-    $('#vanguard').show()
+    // $('#elf').show()
+    // $('#warrior').show()
+    // $('#vanguard').show()
     $('#goblins').show()
-    $('#hpdiv').show()
+    // $('#hpdiv').show()
     $('#difficulty').hide()
+    generateCharacters()
+    generateHPbar()
     generateGoblins()
     selectRandomGoblin()
     enemyAttack();
@@ -113,80 +166,63 @@ $(document).ready(function(){
       }
       
       for (let i=0; i<battleGoblins.length; i++){
-        let goblinButton = $('<button>')
-        goblinButton.attr('id',i)
+        let goblinDiv = $('<div>')
+        goblinDiv.attr('id','goblinDiv'+i)
+        goblinDiv.attr('class', 'goblinDivC')
+        let goblinButton = $('<img>')
+        goblinButton.attr('src','graphics/'+gameData.goblinStats[goblinLvl].png+'.png')
+        goblinButton.attr('name',i)
+        goblinButton.attr('id','goblin'+i)
         goblinButton.attr('class','goblinButton')
-        goblinButton.text("Goblin"+' '+i)
-        $('#goblins').append(goblinButton)
+        goblinButton.attr('height',75)
+        // goblinButton.text("Goblin"+' '+i)
+        $("#goblins").append(goblinDiv)
+        $(goblinDiv).append(goblinButton)
       }
       
     }
   
-    $('#vanguardHP').text('Vanguard:'+ ''+vanguardHP)
-    $('#warriorHP').text('Warrior:'+ ''+warriorHP)
-    $('#elfHP').text('Elf:'+ ''+elfHP)
-    
-    $('#elf').on("click", function(){
-      $(this).addClass('playerselected')
+    function selectElf() {
+      $('#elf').addClass('playerselected')
       $('#warrior').removeClass('playerselected')
       $("#vanguard").removeClass('playerselected')
-      showElfAbilities()
-    })
+      $('#elfattack').show()
+      $('#elfspecial').show()
+      $('#vanguardattack').hide()
+      $('#vanguardspecial').hide()
+      $('#warriorattack').hide()
+      $('#warriorspecial').hide()
+     // showElfAbilities()
+    }
     
-    $('#warrior').on("click", function(){
-      $(this).addClass('playerselected')
+    function selectWarrior(){
+      $('#warrior').addClass('playerselected')
       $('#elf').removeClass('playerselected')
       $("#vanguard").removeClass('playerselected')
-      showWarriorAbilities()
-    })
+      $('#elfattack').hide()
+      $('#elfspecial').hide()
+      $('#vanguardattack').hide()
+      $('#vanguardspecial').hide()
+      $('#warriorattack').show()
+      $('#warriorspecial').show()
+     // showWarriorAbilities()
+    }
     
-    $('#vanguard').on("click", function(){
-      $(this).addClass('playerselected')
+    function selectVanguard(){
+      $('#vanguard').addClass('playerselected')
       $('#warrior').removeClass('playerselected')
       $("#elf").removeClass('playerselected')
-      showVanguardAbilities()
-    })
-
-    $('#elfattack').on("click", function(){
-      elfAttack()
-    })
-
-    $('#elfspecial').on("click", function(){
-      elfSpecial()})
-
-    $('#warriorattack').on("click", function(){
-      warriorAttack()
-    })
-  
-    $('#warriorspecial').on("click", function(){
-      warriorSpecial()})
-
-    $('#vanguardattack').on("click", function(){
-      vanguardAttack()
-    })
-  
-    $('#vanguardspecial').on("click", function(){
-      vanguardSpecial()})
-  
-    
-    $(document).on("click", ".goblinButton", function(){
-      
-      selectedGoblinStr = $(this).attr('id')
-      selectedGoblin = parseInt(selectedGoblinStr,10)
-      goblinHP = battleGoblins[selectedGoblin].hitPoints
-      
-      $(this).addClass('enemyselected')
-      $('.goblinButton').each(function(){
-        if ($(this).attr('id') != selectedGoblin){
-          $(this).removeClass('enemyselected')
-         }
-       
-    })
-
-  })  
+      $('#elfattack').hide()
+      $('#elfspecial').hide()
+      $('#vanguardattack').show()
+      $('#vanguardspecial').show()
+      $('#warriorattack').hide()
+      $('#warriorspecial').hide()
+     // showVanguardAbilities()
+    }
     
     
-    function enemyAttack(){
+  function enemyAttack(){
   
   setTimeout(function(){
       determineAttack()
@@ -246,6 +282,8 @@ $(document).ready(function(){
       }  },1000)
     
     function attackVanguard(atk){
+        let divVan = $('#vanguarddiv')
+        generateGoblinSlash(divVan)
         let damage = Math.floor(Math.random()*battleGoblins[atk].attack)+1 - Math.floor(Math.random()*vanguardDef)+1
         if (damage <= 0){
           damage = 0
@@ -253,17 +291,20 @@ $(document).ready(function(){
           updateText()
           playerAttack();
         } else {
+        $("#vanguard").effect('shake')
         vanguardHP = vanguardHP - damage
     
-        textArray.push(goblinType+ " Attacks Vanguard and deals"+damage+"damage. "+atk)
+        textArray.push(goblinType+ " Attacks Vanguard and deals "+damage+"damage. "+atk)
         updateText()
+        updateHP()
         determineIfDead()
         playerAttack();
         }
     }
     
       function attackWarrior(atk){
-    
+        let divWar = $('#warriordiv')
+        generateGoblinSlash(divWar)
         let damage = Math.floor(Math.random()*battleGoblins[atk].attack)+1 - Math.floor(Math.random()*warriorDef)+1
         if (damage <= 0){
           damage = 0
@@ -271,17 +312,20 @@ $(document).ready(function(){
           updateText()
           playerAttack();
         } else {
+        $("#warrior").effect('shake')
         warriorHP = warriorHP - damage
     
-        textArray.push(goblinType+ " Attacks Warrior and deals"+damage+"damage. " +atk)
+        textArray.push(goblinType+ " Attacks Warrior and deals "+damage+"damage. ")
         updateText()
+        updateHP()
         determineIfDead()
         playerAttack();
         }
       }
 
       function attackElf(atk){
-    
+        let divElf = $('#elfdiv')
+        generateGoblinSlash(divElf)
         let damage = Math.floor(Math.random()*battleGoblins[atk].attack)+1 - Math.floor(Math.random()*elfDef)+1
         if (damage <= 0){
           damage = 0
@@ -289,10 +333,12 @@ $(document).ready(function(){
           updateText()
           playerAttack();
         } else {
+        $("#elf").effect('shake')
         elfHP = elfHP - damage
-  
-        textArray.push(goblinType+" Attacks Elf and deals"+damage+"damage. " +atk)
+        
+        textArray.push(goblinType+" Attacks Elf and deals "+damage+"damage. " )
         updateText()
+        updateHP()
         determineIfDead();
         playerAttack();
         }}
@@ -309,6 +355,9 @@ $(document).ready(function(){
       
       if (playerTurn > 0){
         playerTurn = 0
+
+      generatePlayerSlash()
+        
         setTimeout(function(){
         let damage = Math.floor(Math.random()*elfAtk)+1 - Math.floor(Math.random()*battleGoblins[selectedGoblin].defense)+1
         if (damage <= 0){
@@ -318,6 +367,9 @@ $(document).ready(function(){
           updateText()
           enemyAttack();
         } else {
+          
+        $("#goblin"+selectedGoblin).effect('shake')
+        
         goblinHP = goblinHP - damage
         elfPE = elfPE +1
         textArray.push("Elf Attacks " +goblinType + " and deals "+damage+" damage.")
@@ -339,8 +391,9 @@ $(document).ready(function(){
     }
     
     function warriorAttack(){
-      
+
       if (playerTurn > 0){
+        generatePlayerSlash()
         playerTurn = 0
         setTimeout(function(){
         let damage = Math.floor(Math.random()*warriorAtk)+1 - Math.floor(Math.random()*battleGoblins[selectedGoblin].defense)+1
@@ -351,6 +404,7 @@ $(document).ready(function(){
           playerTurn = 0
           enemyAttack();
         } else {
+        $("#goblin"+selectedGoblin).effect('shake')
         playterTurn = 0
         goblinHP = goblinHP - damage
         warriorPE = warriorPE +1
@@ -375,6 +429,9 @@ $(document).ready(function(){
       
       if (playerTurn > 0){
         playerTurn = 0
+
+        generatePlayerSlash()
+
         setTimeout(function(){
         let damage = Math.floor(Math.random()*vanguardAtk)+1 - Math.floor(Math.random()*battleGoblins[selectedGoblin].defense)+1
         if (damage <= 0){
@@ -384,6 +441,7 @@ $(document).ready(function(){
           playerTurn = 0
           enemyAttack();
         } else {
+        $("#goblin"+selectedGoblin).effect('shake')
         goblinHP = goblinHP - damage
         vanguardPE = vanguardPE +1
         textArray.push("Vanguard Attacks "+goblinType+" and deals "+damage+" damage.")
@@ -416,11 +474,11 @@ $(document).ready(function(){
     function highlightSelectedGoblin(select){
 
       $('.goblinButton').each(function(){
-        if ($(this).attr('id') != select){
+        if ($(this).attr('name') != select){
           $(this).removeClass('enemyselected')
         }
 
-        if ($(this).attr('id') == select){
+        if ($(this).attr('name') == select){
           $(this).addClass('enemyselected')
         }
       
@@ -428,22 +486,29 @@ $(document).ready(function(){
   
       }
   
-    function showElfAbilities(){
+    // function showElfAbilities(){
   
-    $('#elfattack').show()
-    $('#elfspecial').show()
-    $('#vanguardattack').hide()
-    $('#vanguardspecial').hide()
-    $('#warriorattack').hide()
-    $('#warriorspecial').hide()
+    // $('#elfattack').show()
+    // $('#elfspecial').show()
+    // $('#vanguardattack').hide()
+    // $('#vanguardspecial').hide()
+    // $('#warriorattack').hide()
+    // $('#warriorspecial').hide()
   
-    }
+    // }
     
     function killElf() {
-      $('#elf').hide();
-      $('#elfattack').hide();
-      $('#elfspecial').hide();
-      $('#elfHP').hide();
+      
+      $(`#elf`).finish().animate({
+        top: '+=400',
+        left: '+=250'
+      },1000)
+      
+      $('#elf').remove();
+      $('#elfattack').remove();
+      $('#elfspecial').remove();
+      $('#elfHP').remove();
+    
       elfAlive = 0
       elfPE = 0
       if (warriorHP < 1 && vanguardHP < 1 && elfHP < 1){
@@ -454,23 +519,28 @@ $(document).ready(function(){
       //alert('Elf has been eliminated from the battle')
     }
 
-    function showWarriorAbilities(){
+    // function showWarriorAbilities(){
   
-      $('#elfattack').hide()
-      $('#elfspecial').hide()
-      $('#vanguardattack').hide()
-      $('#vanguardspecial').hide()
-      $('#warriorattack').show()
-      $('#warriorspecial').show()
+    //   $('#elfattack').hide()
+    //   $('#elfspecial').hide()
+    //   $('#vanguardattack').hide()
+    //   $('#vanguardspecial').hide()
+    //   $('#warriorattack').show()
+    //   $('#warriorspecial').show()
     
-      }
+    //   }
     
     function killWarrior() {
-      $('#warrior').hide();
-      $('#warriorattack').hide();
-      $('#warriorspecial').hide();
-      $('#warriorHP').hide();
-
+      $(`#warrior`).finish().animate({
+        top: '+=400',
+        left: '+=250'
+      },1000)
+      
+      $('#warrior').remove();
+      $('#warriorattack').remove();
+      $('#warriorspecial').remove();
+      $('#warriorHP').remove();
+    
       warriorAlive = 0
       if (warriorHP < 1 && vanguardHP < 1 && elfHP < 1){
         gameOver();
@@ -480,22 +550,28 @@ $(document).ready(function(){
       //alert('warrior has been eliminated from the battle')
     }
 
-    function showVanguardAbilities(){
+    // function showVanguardAbilities(){
   
-      $('#elfattack').hide()
-      $('#elfspecial').hide()
-      $('#vanguardattack').show()
-      $('#vanguardspecial').show()
-      $('#warriorattack').hide()
-      $('#warriorspecial').hide()
+    //   $('#elfattack').hide()
+    //   $('#elfspecial').hide()
+    //   $('#vanguardattack').show()
+    //   $('#vanguardspecial').show()
+    //   $('#warriorattack').hide()
+    //   $('#warriorspecial').hide()
     
-      }
+    //   }
     
     function killVanguard() {
-      $('#vanguard').hide();
-      $('#vanguardattack').hide();
-      $('#vanguardspecial').hide();
-      $('#vanguardHP').hide();
+      $(`#vanguard`).finish().animate({
+        top: '+=400',
+        left: '+=250'
+      },1000)
+      
+      $('#vanguard').remove();
+      $('#vanguardattack').remove();
+      $('#vanguardspecial').remove();
+      $('#vanguardHP').remove();
+    
       vanguardAlive = 0
       if (warriorHP < 1 && vanguardHP < 1 && elfHP < 1){
         gameOver();
@@ -507,8 +583,15 @@ $(document).ready(function(){
   
     function killGoblin(gob) {
       battleGoblins[gob].alive = 0
-      $(`#`+gob).hide()
-      textArray.push("Goblin "+gob+" has been eliminated.")
+      $(`#goblin`+gob).finish().animate({
+        top: '-=400',
+        left: '-=250'
+      },100)
+      
+      setTimeout(function(){
+      $(`#goblin`+gob).hide()
+    },700)
+      textArray.push(goblinType+" has been eliminated.")
       updateText()
       //alert("Goblin "+gob+" has been eliminated.")
        if (battleGoblins.some(battleGoblin => battleGoblin.alive === 1)){
@@ -625,22 +708,29 @@ $(document).ready(function(){
         
       let atkOrNot = Math.floor(Math.random()*2)
     
-      if (atkOrNot === 1){
+      if (atkOrNot >0){
         let damageFactor = Math.floor(Math.random()*battleGoblins[selectedGoblin].attack)+1 - Math.floor(Math.random()*def)+1
         let damage = Math.floor(damageFactor/2)
 
         if (damage < 1){
-          textArray.push(goblinType+" counterattack missed!")
-          updateText()
           enemyAttack()
         }else{
         switch (char){
           case "vanguard":
             vanguardHP = vanguardHP - damage;
+            let vanG = $('#vanguarddiv')
+            $('#vanguard').effect('shake')
+            generateGoblinSlash(vanG)
           case "warrior":
             warriorHP = warriorHP - damage;
+            let warR = $('#warriordiv')
+            $('#warrior').effect('shake')
+            generateGoblinSlash(warR)
           case "elf":
             elfHP = elfHP - damage;
+            let elf = $('#elf')
+            $('#elf').effect('shake')
+            generateGoblinSlash(elf)
         }
         textArray.push(goblinType+" counterattacks "+char+" and deals "+damage+" damage")
       
@@ -670,9 +760,9 @@ $(document).ready(function(){
 
     function updateHP(){
   
-      $('#vanguardHP').text('Vanguard:'+ ''+vanguardHP)
-      $('#warriorHP').text('Warrior:'+ ''+warriorHP)
-      $('#elfHP').text('Elf:'+ ''+elfHP)
+      $('#vanguardHP').text('Vanguard:'+ ''+vanguardHP+'HP/'+vanguardSP+'SP')
+      $('#warriorHP').text('Warrior:'+ ''+warriorHP+'HP/'+warriorSP+'SP')
+      $('#elfHP').text('Elf:'+ ''+elfHP+'HP/'+elfSP+'SP')
       
       }
 
@@ -689,7 +779,16 @@ $(document).ready(function(){
     }
 
     function updateDifficulty(){
-      $('#difficulty').text(goblinLvl)
+      $('#goblinType').text('Goblin Type: '+gameData.goblinStats[goblinLvl].type)
+      $('#goblinHP').text('HP: '+gameData.goblinStats[goblinLvl].hitPoints)
+      $('#goblinAtk').text("Atk: "+gameData.goblinStats[goblinLvl].attack)
+      $('#goblinDef').text('Def: '+gameData.goblinStats[goblinLvl].defense)
+      if (gameData.goblinStats[goblinLvl].counterAttack > 0){
+      $('#goblinCounterAtk').text('This goblin has a counterattack move.')
+      } else {
+        $('#goblinCounterAtk').text('This goblin does not have a counterattack move.')
+      }
+      $('#goblinImg').attr('src','graphics/'+gameData.goblinStats[goblinLvl].png+'.png')
     }
 
     function victorySeq(elfxp, warriorxp, vanguardxp){
@@ -810,17 +909,23 @@ $(document).ready(function(){
 
       battleGoblins = []
 
-      $('#elf').hide()
-      $('#warrior').hide()
-      $('#vanguard').hide()
-      $('#vanguardattack').hide()
-      $('#vanguardspecial').hide()
-      $('#warriorattack').hide()
-      $('#warriorspecial').hide()
-      $('#elfattack').hide()
-      $('#elfspecial').hide()
+      $('#elf').remove()
+      $('#warrior').remove()
+      $('#vanguard').remove()
+      $('#vanguardattack').remove()
+      $('#vanguardspecial').remove()
+      $('#warriorattack').remove()
+      $('#warriorspecial').remove()
+      $('#elfattack').remove()
+      $('#elfspecial').remove()
       $(".goblinButton").remove()
-      $('#hpdiv').hide()
+      $("#goblinDiv0").remove()
+      $("#goblinDiv1").remove()
+      $("#goblinDiv2").remove()
+      $("#elfHP").remove()
+      $("#warriorHP").remove()
+      $("#vanguardHP").remove()
+      // $('#hpdiv').hide()
       $('#startbutton').show()
       $('#lvldown').show()
       $('#lvlup').show()
@@ -828,6 +933,75 @@ $(document).ready(function(){
       $('#messageb').empty()
       $('#messagea').empty()
 
+    }
+
+    function generatePlayerSlash() {
+
+      let slashDiv = $('<img>')
+        slashDiv.attr('src','graphics/blueslash.gif')
+        slashDiv.attr('class','slash')
+        $('#goblinDiv'+selectedGoblin).append(slashDiv)
+        
+      
+        setTimeout(function(){
+        $(slashDiv).remove()
+
+      },600)
+
+    }
+
+    function generateGoblinSlash(char) {
+
+      let slashDiv = $('<img>')
+        slashDiv.attr('src','graphics/redslash.gif')
+        slashDiv.attr('class','slash')
+        char.append(slashDiv)
+        setTimeout(function(){
+        $(slashDiv).remove()
+      },600)
+    }
+
+    function generateCharacters(){
+      let newElf = $('<img id="elf" src="graphics/elf.png" height="100" onclick="selectElf()">')
+      let elfAtkB = $("<button id='elfattack' class='playerbtn' onclick='elfAttack()'>")
+      elfAtkB.text('Attack')
+      let elfSpecB = $("<button id='elfspecial' class='playerbtn' onclick='elfSpecial()'>")
+      elfSpecB.text('Special')
+
+      let newVanguard = $('<img id="vanguard" src="graphics/vanguard.png" height="100" onclick="selectVanguard()">')
+      let vanguardAtkB = $("<button id='vanguardattack' class='playerbtn' onclick='vanguardAttack()'>")
+      vanguardAtkB.text('Attack')
+      let vanguardSpecB = $("<button id='vanguardspecial' class='playerbtn' onclick='vanguardSpecial()'>")
+      vanguardSpecB.text('Special')
+
+      let newWarrior = $('<img id="warrior" src="graphics/warrior.png" height="100" onclick="selectWarrior()">')
+      let warriorAtkB = $("<button id='warriorattack' class='playerbtn' onclick='warriorAttack()'>")
+      warriorAtkB.text('Attack')
+      let warriorSpecB = $("<button id='warriorspecial' class='playerbtn' onclick='warriorSpecial()'>")
+      warriorSpecB.text('Special')
+
+      $('#elfdiv').append(newElf, elfAtkB, elfSpecB)
+      elfAtkB.hide()
+      elfSpecB.hide()
+      $('#vanguarddiv').append(newVanguard, vanguardAtkB, vanguardSpecB)
+      vanguardAtkB.hide()
+      vanguardSpecB.hide()
+      $('#warriordiv').append(newWarrior, warriorAtkB, warriorSpecB)
+      warriorAtkB.hide()
+      warriorSpecB.hide()
+    }
+
+    function generateHPbar() {
+      
+      let newElfHP = $("<p id='elfHP' class='stats'></p>")
+      let newWarriorHP = $("<p id='warriorHP' class='stats'></p>")
+      let newVanguardHP = $("<p id='vanguardHP' class='stats'></p>")
+
+      $('#hpdiv').append(newElfHP, newWarriorHP, newVanguardHP)
+
+      $('#vanguardHP').text('Vanguard:'+ ''+vanguardHP+'HP/'+vanguardSP+'SP')
+      $('#warriorHP').text('Warrior:'+ ''+warriorHP+'HP/'+warriorSP+'SP')
+      $('#elfHP').text('Elf:'+ ''+elfHP+'HP/'+elfSP+'SP')
     }
     
     function gameOver() {
@@ -838,6 +1012,6 @@ $(document).ready(function(){
 
     
     
-    })
+    
     
     
